@@ -42,6 +42,7 @@ function updateTickerCache(prev: TickerCache, message: YahooPricingData): Ticker
   const price = toNumber(message.price);
   const close = price;
   const volume = toNumber(message.last_size) || 1;
+  const previousPrice = prev.latestQuote ? toNumber(prev.latestQuote.price) : price;
 
   const priceHistory = pruneWindow([
     ...prev.priceHistory,
@@ -58,9 +59,9 @@ function updateTickerCache(prev: TickerCache, message: YahooPricingData): Ticker
     {
       time: new Date(ts).toLocaleTimeString('en-GB', { hour12: false }),
       ts,
-      open: price,
-      high: price,
-      low: price,
+      open: previousPrice,
+      high: Math.max(previousPrice, price),
+      low: Math.min(previousPrice, price),
       close,
       volume,
     },
