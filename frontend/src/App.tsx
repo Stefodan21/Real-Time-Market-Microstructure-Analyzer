@@ -3,7 +3,7 @@ import Header from './components/Header';
 import SpreadChart from './components/SpreadChart';
 import CandlestickChart from './components/CandlestickChart';
 import { TICKERS, type Candle, type PricePoint, type Ticker, type YahooPricingData } from './types/market';
-import { buildSubscribeMessage, decodeYahooPricingMessage } from './utils/yahooWebSocket';
+import { buildSubscribeMessage, decodeYahooPricingMessage } from './utils/yahooWebSocket.ts';
 /** WebSocket endpoint provided via VITE_WS_URL. */
 const WS_URL = import.meta.env.VITE_WS_URL ?? 'wss://streamer.finance.yahoo.com/?version=2';
 const SUBSCRIPTION_INTERVAL_MS = 15_000;
@@ -23,11 +23,12 @@ interface TickerCache {
   latestQuote: YahooPricingData | null;
   priceHistory: PricePoint[];
   candles: Candle[];
+  updatedAt: number | null;
 }
 
 function createEmptyCache(): Record<Ticker, TickerCache> {
   return TICKERS.reduce((acc, ticker) => {
-    acc[ticker] = { latestQuote: null, priceHistory: [], candles: [] };
+    acc[ticker] = { latestQuote: null, priceHistory: [], candles: [], updatedAt: null };
     return acc;
   }, {} as Record<Ticker, TickerCache>);
 }
@@ -71,6 +72,7 @@ function updateTickerCache(prev: TickerCache, message: YahooPricingData): Ticker
     latestQuote: message,
     priceHistory,
     candles,
+    updatedAt: ts,
   };
 }
 
@@ -82,6 +84,7 @@ export default function App() {
   const [latestQuote, setLatestQuote] = useState<YahooPricingData | null>(null);
   const [priceHistory, setPriceHistory] = useState<PricePoint[]>([]);
   const [candles, setCandles] = useState<Candle[]>([]);
+  const [lastUpdateAt, setLastUpdateAt] = useState<number | null>(null);
 
   const tickerRef = useRef(ticker);
   tickerRef.current = ticker;
@@ -92,6 +95,7 @@ export default function App() {
     setLatestQuote(cached.latestQuote);
     setPriceHistory(cached.priceHistory.slice(-MAX_PRICE_POINTS));
     setCandles(cached.candles.slice(-MAX_CANDLES));
+    setLastUpdateAt(cached.updatedAt);
   }, []);
 
   const processMessage = useCallback((message: YahooPricingData) => {
@@ -106,6 +110,7 @@ export default function App() {
     setLatestQuote(nextCache.latestQuote);
     setPriceHistory(nextCache.priceHistory.slice(-MAX_PRICE_POINTS));
     setCandles(nextCache.candles.slice(-MAX_CANDLES));
+    setLastUpdateAt(nextCache.updatedAt);
   }, []);
 
   // Show cached data immediately when the selection changes.
@@ -165,7 +170,7 @@ export default function App() {
     };
   }, [live, processMessage]);
 
-  const latencyMs = latestQuote ? Math.max(0, Date.now() - toNumber(latestQuote.time) * 1000) : 0;
+  const latencyMs = lastUpdateAt ? Math.max(0, Date.now() - lastUpdateAt) : 0;
 
   return (
     <div className="app">
