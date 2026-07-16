@@ -44,8 +44,8 @@ const pricingDataType = new Type('PricingData')
 
 const root = new Root().add(pricingDataType);
 
-function normalizeSymbols(symbols: string | string[]): string[] {
-  return Array.isArray(symbols) ? symbols : [symbols];
+function normalizeSymbols(symbols: string | readonly string[]): string[] {
+  return typeof symbols === 'string' ? [symbols] : Array.from(symbols);
 }
 
 function decodeBase64ToBytes(base64: string): Uint8Array {
@@ -70,10 +70,10 @@ export function decodeYahooPricingMessage(eventData: string): YahooPricingData |
   }
 }
 
-export function buildSubscribeMessage(symbols: string | string[]): string {
+export function buildSubscribeMessage(symbols: string | readonly string[]): string {
   return JSON.stringify({ subscribe: normalizeSymbols(symbols) });
 }
 
-export function buildUnsubscribeMessage(symbols: string | string[]): string {
+export function buildUnsubscribeMessage(symbols: string | readonly string[]): string {
   return JSON.stringify({ unsubscribe: normalizeSymbols(symbols) });
 }
