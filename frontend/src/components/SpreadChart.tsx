@@ -7,15 +7,15 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import type { SpreadPoint } from '../types/market';
+import type { PricePoint } from '../types/market';
 
 interface SpreadChartProps {
-  data: SpreadPoint[];
+  data: PricePoint[];
 }
 
-const SPREAD = '#3b82f6';
+const PRICE = '#3b82f6';
 
-/** Line chart: bid-ask spread (basis points) over time. */
+/** Line chart: live Yahoo price updates over time. */
 export default function SpreadChart({ data }: SpreadChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -40,12 +40,12 @@ export default function SpreadChart({ data }: SpreadChartProps) {
             borderRadius: 8,
             color: '#e2e8f0',
           }}
-          formatter={(value: number) => [`${value.toFixed(2)} bps`, 'Spread']}
+          formatter={(value: number) => [`${value.toFixed(2)}`, 'Price']}
         />
         <Line
           type="monotone"
-          dataKey="spreadBps"
-          stroke={SPREAD}
+          dataKey="price"
+          stroke={PRICE}
           strokeWidth={2}
           dot={false}
           isAnimationActive={false}

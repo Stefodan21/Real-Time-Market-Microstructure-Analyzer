@@ -1,23 +1,57 @@
 /** Shared domain types for the Market Microstructure Analyzer. */
 
-/** A single price level in the order book. */
-export interface OrderBookLevel {
-  /** Price at this level. */
+/** Yahoo websocket payload decoded by yfinance AsyncWebSocket. */
+export interface YahooPricingData {
+  id: string;
   price: number;
-  /** Aggregated resting bid volume at this price. */
-  bidVolume: number;
-  /** Aggregated resting ask volume at this price. */
-  askVolume: number;
+  time: number | string;
+  currency: string;
+  exchange: string;
+  quote_type: number;
+  market_hours: number;
+  change_percent: number;
+  day_volume: number | string;
+  day_high: number;
+  day_low: number;
+  change: number;
+  short_name: string;
+  expire_date: number | string;
+  open_price: number;
+  previous_close: number;
+  strike_price: number;
+  underlying_symbol: string;
+  open_interest: number | string;
+  options_type: number;
+  mini_option: boolean;
+  last_size: number | string;
+  bid: number;
+  bid_size: number | string;
+  ask: number;
+  ask_size: number | string;
+  price_hint: number | string;
+  vol_24hr: number | string;
+  vol_all_currencies: number | string;
+  from_currency: string;
+  last_market: string;
+  circulating_supply: number;
+  market_cap: number | string;
 }
 
-/** A time-stamped bid-ask spread sample, measured in basis points. */
-export interface SpreadPoint {
-  /** Human readable HH:MM:SS label used on the X-axis. */
+/** Error payload produced when the websocket decoder cannot parse a message. */
+export interface YahooErrorMessage {
+  error: string;
+  raw_base64: string;
+}
+
+/** Union of supported websocket messages. */
+export type YahooWebSocketMessage = YahooPricingData | YahooErrorMessage;
+
+/** A time-stamped live price sample for the line chart. */
+export interface PricePoint {
   time: string;
-  /** Epoch milliseconds for ordering. */
   ts: number;
-  /** Spread in basis points. */
-  spreadBps: number;
+  price: number;
+  changePercent: number;
 }
 
 /** A single OHLC candle with aggregated volume for one time bucket. */
@@ -36,19 +70,6 @@ export interface Candle {
   close: number;
   /** Total traded/observed volume aggregated over the bucket. */
   volume: number;
-}
-
-/** A full snapshot pushed from the backend. */
-export interface MarketSnapshot {
-  ticker: string;
-  /** Epoch milliseconds when the snapshot was produced. */
-  timestamp: number;
-  /** Order book depth, ordered from lowest to highest price. */
-  orderBook: OrderBookLevel[];
-  /** Bid-ask spread in basis points. */
-  spreadBps: number;
-  /** End-to-end refresh latency in milliseconds. */
-  latencyMs: number;
 }
 
 /** Tickers selectable in the header. */

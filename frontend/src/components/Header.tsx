@@ -56,14 +56,14 @@ export default function Header({
           className={`live-indicator ${
             live ? (healthy ? 'live-indicator--ok' : 'live-indicator--warn') : 'live-indicator--off'
           }`}
-          title={connected ? 'Connected to backend' : 'Backend disconnected'}
+          title={connected ? 'Connected to Yahoo feed' : 'Yahoo feed disconnected'}
         >
           <span className="live-indicator__dot" />
           <span className="live-indicator__text">
             {live ? (connected ? `${latencyMs} ms` : 'offline') : 'stopped'}
           </span>
           <span className="live-indicator__source">
-            {connected ? 'ws' : 'offline'}
+            {connected ? 'yahoo' : 'offline'}
           </span>
         </div>
       </div>
