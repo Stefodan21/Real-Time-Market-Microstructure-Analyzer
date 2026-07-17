@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react';
 // this config lives inside `config/`.
 export default defineConfig({
   plugins: [react()],
+  base: '/Real-Time-Market-Microstructure-Analyzer/',
   server: {
     port: 5173,
     host: true,
