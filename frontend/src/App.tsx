@@ -6,6 +6,8 @@ import { TICKERS, type Candle, type PricePoint, type Ticker, type YahooPricingDa
 import { buildSubscribeMessage, decodeYahooPricingMessage } from './utils/yahooWebSocket.ts';
 /** WebSocket endpoint provided via VITE_WS_URL. */
 const WS_URL = import.meta.env.VITE_WS_URL ?? 'wss://streamer.finance.yahoo.com/?version=2';
+/** Backend endpoint that receives the selected ticker. */
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000';
 const SUBSCRIPTION_INTERVAL_MS = 15_000;
 const CACHE_WINDOW_MS = 30 * 60 * 1000;
 
@@ -98,6 +100,15 @@ export default function App() {
     setLastUpdateAt(cached.updatedAt);
   }, []);
 
+  const handleTickerChange = useCallback((nextTicker: Ticker) => {
+    setTicker(nextTicker);
+    void fetch(`${BACKEND_URL}/ticker`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticker: nextTicker }),
+    });
+  }, []);
+
   const processMessage = useCallback((message: YahooPricingData) => {
     const symbol = message.id as Ticker;
     if (!TICKERS.includes(symbol)) return;
@@ -176,7 +187,7 @@ export default function App() {
     <div className="app">
       <Header
         ticker={ticker}
-        onTickerChange={setTicker}
+        onTickerChange={handleTickerChange}
         live={live}
         onToggleLive={() => setLive((v) => !v)}
         latencyMs={latencyMs}
