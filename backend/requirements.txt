@@ -1,2 +1,8 @@
 yfinance
 fastapi
+numpy
+torch
+scikit-learn
+uvicorn
+stable-baselines3
+stable-baselines3==2.1.0
