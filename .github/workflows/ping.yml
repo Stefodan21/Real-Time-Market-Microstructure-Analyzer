@@ -2,20 +2,18 @@ name: Ping Render Service
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/14 * * * *'
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Render health endpoint
+      - name: Ping Render endpoint
         env:
           RENDER_PING_URL: ${{ secrets.RENDER_PING_URL }}
         run: |
-          if [ -z "$RENDER_PING_URL" ]; then
-            echo "RENDER_PING_URL secret is not set"
-            exit 1
-          fi
-
-          curl -fsS "$RENDER_PING_URL/ping"
+          for i in {1..3}; do
+            curl -fsS "$RENDER_PING_URL/" && break
+            sleep 10
+          done
