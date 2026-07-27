@@ -12,8 +12,8 @@ from pydantic import BaseModel
 
 # stream is the function that starts the market-data streaming work.
 from agent import stream
-# Import the tiny ping app so we can mount it at /ping.
-from ping.ping import ping_app
+# Import the tiny ping router so we can serve /ping directly.
+from ping.ping import router as ping_router
 
 
 # Create the FastAPI app object.
@@ -29,8 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount the ping app so `/ping` becomes available without adding another router.
-app.mount("/ping", ping_app)
+# Include the ping router so `/ping` responds directly with no redirect.
+app.include_router(ping_router)
 
 
 # This class describes the JSON body the frontend sends to `/ticker`.

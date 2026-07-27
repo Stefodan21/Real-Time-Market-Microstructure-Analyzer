@@ -1,12 +1,12 @@
-from fastapi import FastAPI
+from fastapi import APIRouter
 
 
-# This tiny FastAPI app only exists to answer GET / with a fast keep-alive response.
-ping_app = FastAPI()
+# This router exists only to answer GET /ping with a fast keep-alive response.
+router = APIRouter(prefix="/ping", tags=["ping"])
 
 
-# When mounted at /ping by main.py, this route becomes GET /ping.
-@ping_app.get("/")
+# This route is served directly at /ping, without a trailing-slash redirect.
+@router.get("")
 async def ping() -> dict[str, str]:
     # Keep the response small and fast so it does not trigger any heavy backend logic.
     return {"status": "ok"}
