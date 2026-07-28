@@ -14,6 +14,6 @@ jobs:
           RENDER_PING_URL: ${{ vars.VITE_BACKEND_URL }}
         run: >-
           for i in {1..3}; do
-            curl -fsS "$VITE_BACKEND_URL" && break
+            curl -fsS "$RENDER_PING_URL" && break
             sleep 10
           done
