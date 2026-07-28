@@ -2,7 +2,7 @@ name: Ping Render Service
 
 on:
   schedule:
-    - cron: '0,10,20,30,40,50 * * * *'
+    - cron: '*/8 * * * *'
   workflow_dispatch:
 
 jobs:
